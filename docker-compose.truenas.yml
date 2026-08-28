@@ -1,0 +1,30 @@
+services:
+  juke-nuke:
+    image: ghcr.io/christianrobertson36/juke-nuke:v1
+    container_name: juke-nuke
+    restart: unless-stopped
+    pull_policy: always
+    ports:
+      - "3105:3000"
+    environment:
+      NODE_ENV: production
+      APP_VERSION: v1
+      PORT: 3000
+      DATA_DIR: /data
+      JUKE_NUKE_MODE: server
+      MEDIA_ROOT: /media
+      TMDB_READ_TOKEN: ${TMDB_READ_TOKEN:-}
+    volumes:
+      - /mnt/APP_POOL/Juke-Nuke/data:/data
+      - /mnt/APP_POOL/Juke-Nuke/config:/config
+      - /mnt/APP_POOL/Juke-Nuke/cache:/cache
+      - /mnt/APP_POOL/Juke-Nuke/uploads:/uploads
+      - /mnt/APP_POOL/Juke-Nuke/backups:/backups
+      - /mnt/APP_POOL/Juke-Nuke/logs:/logs
+      - /mnt/tank/media:/media:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
